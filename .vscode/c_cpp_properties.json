@@ -4,7 +4,6 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/Libraries/SFML-2.5.1/include",
                 "C:\\Users\\twinb\\OneDrive\\Desktop\\school\\cop3530\\Project3_Repository\\Libraries\\SFML-2.5.1\\include"
             ],
             "defines": [

@@ -1,5 +1,8 @@
 Generate .o and .exe file (Powershell or Git Bash):
-g++ -c main.cpp -I"C:\Users\twinb\OneDrive\Desktop\school\cop3530\Project3_RepositoryLibraries\SFML-2.5.1\include" -DSFML_STATIC; g++ main.o -o main -L"C:\Users\twinb\OneDrive\Desktop\school\cop3530\Project3_RepositoryLibraries\SFML-2.5.1\lib" -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lfreetype -lwinmm -lgdi32 -mwindows -lsfml-main
+g++ -c main.cpp -I"C:\Users\twinb\OneDrive\Desktop\school\cop3530\Project3_Repository\Libraries\SFML-2.5.1\include" -DSFML_STATIC; g++ main.o -o main -L"C:\Users\twinb\OneDrive\Desktop\school\cop3530\Project3_Repository\Libraries\SFML-2.5.1\lib" -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lfreetype -lwinmm -lgdi32 -mwindows -lsfml-main
 
 Clear .o and .exe file (Powershell or Git Bash):
 rm main.o; rm main.exe
+
+Run executible:
+./main.exe

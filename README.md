@@ -8,3 +8,6 @@ Users will enter their desired macronutrient amounts into the program. The progr
 We will be using the Food JSON dataset from the CORGIS Dataset Project, which has about 266,000 data points: https://corgis-edu.github.io/corgis/json/food/
 
 # Workspace Setup
+1. Run setup.py to generate a terminal command text file specific to your computer
+2. Copy the terminal command from the terminalCommands.txt file when you want to build an executible
+3. Run the executible to see the current state of the project
