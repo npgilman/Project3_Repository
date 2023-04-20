@@ -8,6 +8,7 @@ Users will enter their desired macronutrient amounts into the program. The progr
 We will be using the Food JSON dataset from the CORGIS Dataset Project, which has about 266,000 data points: https://corgis-edu.github.io/corgis/json/food/
 
 # Workspace Setup
-1. Run setup.py to generate a terminal command text file specific to your computer
+1. If .vscode/c_cpp_properties.json exists, delete it and hit CTRL SHIFT + P. Type "C/C++: Edit Configurations (JSON). It should generate a new c_cpp_properties.json file.
+1. Run setup.py to generate a terminal command text file specific to your computer and add your SFML folder to the c_cpp_properties files.
 2. Copy the terminal command from the terminalCommands.txt file when you want to build an executible
 3. Run the executible to see the current state of the project

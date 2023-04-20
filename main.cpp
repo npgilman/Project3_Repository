@@ -1,134 +1,91 @@
-#include <SFML/Window.hpp>
-#include <SFML/OpenGL.hpp>
+#include <SFML/Graphics.hpp>
 
-int main()
-{
-    // Request a 24-bits depth buffer when creating the window
-    sf::ContextSettings contextSettings;
-    contextSettings.depthBits = 24;
+#include <iostream>
+#include <string>
 
-    // Create the main window
-    sf::Window window(sf::VideoMode(640, 480), "Sample Window for Food Finder", sf::Style::Default, contextSettings);
+#include "windowUtils.cpp"
 
-    // Make it the active window for OpenGL calls
-    window.setActive();
+using namespace std;
 
-    // Set the color and depth clear values
-    glClearDepth(1.f);
-    glClearColor(0.f, 0.f, 0.f, 1.f);
-
-    // Enable Z-buffer read and write
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
-
-    // Disable lighting and texturing
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-
-    // Configure the viewport (the same size as the window)
-    glViewport(0, 0, window.getSize().x, window.getSize().y);
-
-    // Setup a perspective projection
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    GLfloat ratio = static_cast<float>(window.getSize().x) / window.getSize().y;
-    glFrustum(-ratio, ratio, -1.f, 1.f, 1.f, 500.f);
-
-    // Define a 3D cube (6 faces made of 2 triangles composed by 3 vertices)
-    GLfloat cube[] =
-    {
-        // positions    // colors (r, g, b, a)
-        -50, -50, -50,  0, 0, 1, 1,
-        -50,  50, -50,  0, 0, 1, 1,
-        -50, -50,  50,  0, 0, 1, 1,
-        -50, -50,  50,  0, 0, 1, 1,
-        -50,  50, -50,  0, 0, 1, 1,
-        -50,  50,  50,  0, 0, 1, 1,
-
-         50, -50, -50,  0, 1, 0, 1,
-         50,  50, -50,  0, 1, 0, 1,
-         50, -50,  50,  0, 1, 0, 1,
-         50, -50,  50,  0, 1, 0, 1,
-         50,  50, -50,  0, 1, 0, 1,
-         50,  50,  50,  0, 1, 0, 1,
-
-        -50, -50, -50,  1, 0, 0, 1,
-         50, -50, -50,  1, 0, 0, 1,
-        -50, -50,  50,  1, 0, 0, 1,
-        -50, -50,  50,  1, 0, 0, 1,
-         50, -50, -50,  1, 0, 0, 1,
-         50, -50,  50,  1, 0, 0, 1,
-
-        -50,  50, -50,  0, 1, 1, 1,
-         50,  50, -50,  0, 1, 1, 1,
-        -50,  50,  50,  0, 1, 1, 1,
-        -50,  50,  50,  0, 1, 1, 1,
-         50,  50, -50,  0, 1, 1, 1,
-         50,  50,  50,  0, 1, 1, 1,
-
-        -50, -50, -50,  1, 0, 1, 1,
-         50, -50, -50,  1, 0, 1, 1,
-        -50,  50, -50,  1, 0, 1, 1,
-        -50,  50, -50,  1, 0, 1, 1,
-         50, -50, -50,  1, 0, 1, 1,
-         50,  50, -50,  1, 0, 1, 1,
-
-        -50, -50,  50,  1, 1, 0, 1,
-         50, -50,  50,  1, 1, 0, 1,
-        -50,  50,  50,  1, 1, 0, 1,
-        -50,  50,  50,  1, 1, 0, 1,
-         50, -50,  50,  1, 1, 0, 1,
-         50,  50,  50,  1, 1, 0, 1,
-    };
-
-    // Enable position and color vertex components
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 7 * sizeof(GLfloat), cube);
-    glColorPointer(4, GL_FLOAT, 7 * sizeof(GLfloat), cube + 3);
-
-    // Disable normal and texture coordinates vertex components
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    // Create a clock for measuring the time elapsed
-    sf::Clock clock;
-
-    // Start the game loop
+int main(void)
+{   
+    int height = 1080, width = 1920;
+    string title = "Food Finder";
+    sf::RenderWindow window(sf::VideoMode(width, height), title);
+    WindowUtils wutils = WindowUtils(height, width, title);
     while (window.isOpen())
     {
-        // Process events
         sf::Event event;
         while (window.pollEvent(event))
         {
-            // Close window: exit
             if (event.type == sf::Event::Closed)
                 window.close();
-
-            // Escape key: exit
-            if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape))
-                window.close();
-
-            // Resize event: adjust the viewport
-            if (event.type == sf::Event::Resized)
-                glViewport(0, 0, event.size.width, event.size.height);
         }
 
-        // Clear the color and depth buffers
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // Apply some transformations to rotate the cube
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-        glTranslatef(0.f, 0.f, -200.f);
-        glRotatef(clock.getElapsedTime().asSeconds() * 50, 1.f, 0.f, 0.f);
-        glRotatef(clock.getElapsedTime().asSeconds() * 30, 0.f, 1.f, 0.f);
-        glRotatef(clock.getElapsedTime().asSeconds() * 90, 0.f, 0.f, 1.f);
-
-        // Draw the cube and render it in window
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        wutils.drawBackground(window);
         window.display();
     }
-
-    return EXIT_SUCCESS;
+    
+    return 0;
 }
+
+
+
+// void drawText(sf::RenderWindow &window, string textToDisplay, int posX, int posY, int size)
+// {
+//     sf::Font font;
+//     if (!font.loadFromFile("./assets/fonts/ariblk.ttf"))
+//     {
+//         // Font load error
+//         std::cout << "Font load error." << std::endl;
+//         return;
+//     }
+
+//     sf::Text text;
+//     text.setFont(font);
+//     text.setString(textToDisplay);
+//     text.setCharacterSize(size);
+//     text.setFillColor(sf::Color(64,64,64));
+//     text.setPosition(posX, posY);
+//     window.draw(text);
+// }
+
+// void drawPanel(sf::RenderWindow &window, float width, float height, int posX, int posY)
+// {
+//     sf::RectangleShape panel(sf::Vector2f(width, height));
+//     panel.setFillColor(sf::Color(217,217,217));
+//     panel.setPosition(posX, posY);
+//     window.draw(panel);
+// }
+
+// void drawBackground(sf::RenderWindow &window, string title, int width, int height)
+// {
+//     sf::Color bgColor = sf::Color(221,208,200);
+//     window.clear(bgColor);
+//     drawText(window, title, (0.05 * width), 0, 40);
+//     drawPanel(window, (0.4 * width), (0.4 * height), (0.05 * width), (0.15 * height));
+//     drawPanel(window, (0.4 * width), (0.4 * height), (0.55 * width), (0.15 * height));
+// }
+
+
+// int main()
+// {
+//     int width = 960, height = 540;
+//     string title = "Food Finder!";
+//     sf::RenderWindow window(sf::VideoMode(width, height), title);
+//     window.clear(sf::Color(221,208,200));
+
+//     while (window.isOpen())
+//     {
+//         sf::Event event;
+//         while (window.pollEvent(event))
+//         {
+//             if (event.type == sf::Event::Closed)
+//                 window.close();
+//         }
+//         drawBackground(window, title, width, height);
+//         window.display();
+//     }
+
+//     return 0;
+// }
