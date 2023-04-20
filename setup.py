@@ -13,7 +13,7 @@ rm main.o; rm main.exe
 Run executible:
 ./main.exe""".format(smflFolder, smflFolder)
 
-with open("terminalCommands.txt",'w') as file:
+with open("TextFiles/terminalCommands.txt",'w') as file:
     file.write(commands)
 
 # Update json properties file
