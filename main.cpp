@@ -11,17 +11,29 @@ int main(void)
 {   
     int height = 1080, width = 1920;
     string title = "Food Finder";
-    sf::RenderWindow window(sf::VideoMode(width, height), title);
+
+    sf::RenderWindow window(sf::VideoMode(width, height), title, sf::Style::Close);
+    window.setSize(sf::Vector2u(width, height));
     WindowUtils wutils = WindowUtils(height, width, title);
+
+    // Window main loop
     while (window.isOpen())
     {
         sf::Event event;
         while (window.pollEvent(event))
-        {
+        {   
+            // Expand on this to accept user clicks
+            if (event.type == sf::Event::MouseButtonPressed)
+            {}
+            // Expand on this to take user input
+            if (event.type == sf::Event::TextEntered)
+            {}
+            // Close program
             if (event.type == sf::Event::Closed)
                 window.close();
         }
 
+        // Render graphics
         wutils.drawBackground(window);
         window.display();
     }
