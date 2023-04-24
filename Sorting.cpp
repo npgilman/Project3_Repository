@@ -1,6 +1,7 @@
 //
 // Created by Les on 4/19/2023.
 //
+#pragma once
 #include "Sorting.h"
 
 Sorting::Sorting()
@@ -101,5 +102,46 @@ void Sorting::testMergeSort()
 //        cout << food << ": " << carbData[food] << endl;
         string food = mapper[fatVec[i]];
         cout << food << "; " << fatData[food] << endl;
+    }
+}
+int Sorting::getMax(vector<int> &data, int size, const map<string, float>& macro)    {
+    int maxIndex = 0; 
+    float max = INT_MIN; 
+    for (int i = 0; i < size; i++)    {
+        string name = mapper[data[i]];
+        if (macro.at(name) > max)    {
+            maxIndex = i; 
+            max = macro.at(name); 
+        }
+    }
+    return maxIndex; 
+}
+void Sorting::pancakeFlip(vector<int> &data, int size)   {
+
+    for (int i = 0; i < size; i++)    {
+        swap(data[i], data[size-i]); 
+    }
+}
+void Sorting::pancakeSort(vector<int> &data, int size, const map<string, float>& macro)    {
+    int n = size; 
+    while (n > 1)    {
+        int maxIndex = getMax(data, n, macro);
+        pancakeFlip(data, maxIndex);
+        pancakeFlip(data, n - 1); 
+        n--; 
+    }
+}
+void Sorting::testPancakeSort()
+{
+    vector<int> carbVec = indices;
+    pancakeSort(carbVec, carbVec.size()-1, carbData);
+    for (int i = 0; i < 50; i++)
+    {
+//        string food = mapper[testVec[i]];
+//        cout << food << ": " << proteinData[food] << endl;
+//        string food = mapper[carbVec[i]];
+//        cout << food << ": " << carbData[food] << endl;
+        string food = mapper[carbVec[i]];
+        cout << food << "; " << carbData[food] << endl;
     }
 }

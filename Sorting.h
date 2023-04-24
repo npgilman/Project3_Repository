@@ -16,7 +16,8 @@ public:
     Sorting();
     void mergeSort(vector<int> &data, int start, int end, const map<string, float>& macro);
     void merge(vector<int> &data, int left, int mid, int right, const map<string, float>& macro);
-
+    void pancakeSort(vector<int> &data, int size, const map<string, float>& macro); 
+    void testPancakeSort();
     void testMergeSort();
 
 
@@ -27,6 +28,9 @@ private:
     map<string, float> fatData;
     map<int, string> mapper;
     vector<int> indices;
+
+    void pancakeFlip(vector<int> &data, int size); 
+    int getMax(vector<int> &data, int size, const map<string, float>& macro);
 };
 
 
