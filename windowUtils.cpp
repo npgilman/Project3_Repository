@@ -26,12 +26,19 @@ class WindowUtils
                             "Fiber",
                             "Vitamin C"};
     map<string, pair<pair<int, int>, pair<int, int>>> clickBounds = {};
+    map<string, string> buttonValues = {};
+    bool buttonSelected = false;
+    bool resultsGenerated = false;
+    string activeButton = "";
 
     public:
         WindowUtils();
         WindowUtils(int width, int height, string title);
         void drawBackground(sf::RenderWindow &window);
+        void drawResults(sf::RenderWindow &window);
         void handleClick(sf::RenderWindow &window, sf::Event mouseEvent);
+        void handleText(sf::RenderWindow &window, sf::Event mouseEvent);
+        
     
     private:
         void drawPanel(sf::RenderWindow &window, float width, float height, int posX, int posY, sf::Color color);
@@ -48,6 +55,11 @@ WindowUtils::WindowUtils(int width, int height, string title)
     this->width = width;
     this->height = height;
     this->title = title;
+
+    for (int i = 0; i < macros.size(); i++)
+    {
+        buttonValues[macros[i]] = "";
+    }
 }
 
 void WindowUtils::drawBackground(sf::RenderWindow &window)
@@ -88,6 +100,22 @@ void WindowUtils::drawBackground(sf::RenderWindow &window)
     posXY = make_pair((0.15 * window.getSize().x), (0.75 * window.getSize().y));
     dimensionsXY = make_pair((0.2 * window.getSize().x), (0.1 * window.getSize().y));
     clickBounds["Generate"] = make_pair(posXY, make_pair(posXY.first + dimensionsXY.first, posXY.second + dimensionsXY.second));
+
+    drawResults(window);
+
+}
+
+void WindowUtils::drawResults(sf::RenderWindow &window)
+{
+    for (auto i = buttonValues.begin(); i != buttonValues.end(); i++)
+    {
+        drawText(window, i->second, clickBounds[i->first].first.first, clickBounds[i->first].first.second, 30, sf::Color::Black);
+    }
+
+    if (resultsGenerated)
+    {
+        generateButton(window);
+    }
 }
 
 void WindowUtils::drawText(sf::RenderWindow &window, string textToDisplay, int posX, int posY, int size, sf::Color color)
@@ -138,22 +166,39 @@ void WindowUtils::handleClick(sf::RenderWindow &window, sf::Event event)
     
     if (clicked)
     {
-        if (buttonName.compare("Carbohydrates") == 0)
-        {}
-        else if (buttonName.compare("Protein") == 0)
-        {}
-        else if (buttonName.compare("Fat") == 0)
-        {}
-        else if (buttonName.compare("Fiber") == 0)
-        {}
-        else if (buttonName.compare("Vitamin C") == 0)
-        {}
-        else if (buttonName.compare("Generate") == 0)
-        {generateButton(window);}
-        else
+        activeButton = buttonName;
+        buttonSelected = true;
+        if (buttonName.compare("Generate") == 0)
         {
-            // No valid button clicked
+            resultsGenerated = true;
         }
+    }
+    else 
+    {
+        activeButton = "";
+        buttonSelected = false;
+    }
+}
+
+void WindowUtils::handleText(sf::RenderWindow &window, sf::Event event)
+{
+    if (buttonSelected)
+    {   
+        if (buttonValues.find(activeButton) == buttonValues.end())
+            return;
+        
+        string str = buttonValues[activeButton];
+        if (event.text.unicode == '\b')
+        {
+            if (!str.empty())
+                str.erase(str.size() - 1, 1);
+        }
+        else if (event.text.unicode < 58 && event.text.unicode > 47)
+        {
+            if (str.size() < 5)
+                str += static_cast<char>(event.text.unicode);
+        }
+        buttonValues[activeButton] = str;
     }
 }
 
@@ -163,6 +208,6 @@ void WindowUtils::generateButton(sf::RenderWindow &window)
     for (int i = 0; i < 9; i++)
     {
         float offset = 0.2;
-        drawPanel(window, (0.3 * window.getSize().x), (0.07 * window.getSize().y), (0.6 * window.getSize().x), (offset + i*(0.08)) * window.getSize().y, sf::Color::Black);    
+        drawPanel(window, (0.3 * window.getSize().x), (0.07 * window.getSize().y), (0.6 * window.getSize().x), (offset + i*(0.08)) * window.getSize().y, sf::Color::White);    
     }
 }

@@ -35,7 +35,9 @@ int main(void)
             }
             // Expand on this to take user input
             if (event.type == sf::Event::TextEntered)
-            {}
+            {
+                wutils.handleText(window, event);          
+            }
             // Close program
             if (event.type == sf::Event::Closed) {window.close();}
         }
