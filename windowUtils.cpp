@@ -41,7 +41,7 @@ class WindowUtils
     private:
         void drawPanel(sf::RenderWindow &window, float width, float height, int posX, int posY, sf::Color color);
         void drawText(sf::RenderWindow &window, string textToDisplay, int posX, int posY, int size, sf::Color color);
-        void generateButton(sf::RenderWindow &window);
+        void results(sf::RenderWindow &window);
 
 
 };
@@ -55,7 +55,7 @@ WindowUtils::WindowUtils(sf::RenderWindow &window)
 
     for (int i = 0; i < macros.size(); i++)
     {
-        buttonValues[macros[i]] = "";
+        buttonValues[macros[i]] = "0";
     }
 }
 
@@ -111,7 +111,12 @@ void WindowUtils::drawResults(sf::RenderWindow &window)
 
     if (resultsGenerated)
     {
-        generateButton(window);
+        results(window);
+    }
+    else
+    {
+        drawText(window, "Click the button to find", 0.59 * windowWidth, 0.5 * windowHeight, 50, sf::Color::Black);
+        drawText(window, "your food!", 0.675 * windowWidth, 0.55 * windowHeight, 50, sf::Color::Black);
     }
 }
 
@@ -167,6 +172,7 @@ void WindowUtils::handleClick(sf::RenderWindow &window, sf::Event event)
         buttonSelected = true;
         if (buttonName.compare("Generate") == 0)
         {
+            
             resultsGenerated = true;
         }
     }
@@ -199,12 +205,21 @@ void WindowUtils::handleText(sf::RenderWindow &window, sf::Event event)
     }
 }
 
-/// TODO: Change this to pull from Lester's sorted files
-void WindowUtils::generateButton(sf::RenderWindow &window)
+/// TODO: Change this to pull proper sorted results
+void WindowUtils::results(sf::RenderWindow &window)
 {
+    float offset = 0.2;
+    float spacing = 0.08;
     for (int i = 0; i < 9; i++)
     {
-        float offset = 0.2;
-        drawPanel(window, (0.3 * windowWidth), (0.07 * windowHeight), (0.6 * windowWidth), (offset + i*(0.08)) * windowHeight, sf::Color::White);    
+        drawPanel(window, (0.3 * windowWidth), (0.07 * windowHeight), (0.6 * windowWidth), (offset + i*(spacing)) * windowHeight, sf::Color::White);    
+    }
+
+    int count = 0;
+    for (auto i = buttonValues.begin(); i != buttonValues.end(); i++)
+    {
+        drawText(window, i->first, (0.6 * windowWidth), ((offset + count*(spacing)) * windowHeight), 40, sf::Color::Black);
+        drawText(window, i->second, (0.8 * windowWidth), ((offset + count*(spacing)) * windowHeight), 40, sf::Color::Black);
+        count++;
     }
 }
