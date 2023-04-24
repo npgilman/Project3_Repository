@@ -17,9 +17,7 @@ class WindowUtils
     string title = "Food Finder!";
     string fontFile = "./assets/fonts/ariblk.ttf";
 
-    /// @brief TODO: Change to be equal to window.getSize().x/window.getSize().y 
-    ///              and replace instances of window.getSize()
-    int width = 1920, height = 1080;
+    int windowWidth = 1920, windowHeight = 1080;
     vector<string> macros = {"Carbohydrates",
                             "Protein",
                             "Fat",
@@ -33,7 +31,7 @@ class WindowUtils
 
     public:
         WindowUtils();
-        WindowUtils(int width, int height, string title);
+        WindowUtils(sf::RenderWindow &window);
         void drawBackground(sf::RenderWindow &window);
         void drawResults(sf::RenderWindow &window);
         void handleClick(sf::RenderWindow &window, sf::Event mouseEvent);
@@ -50,11 +48,10 @@ class WindowUtils
 
 WindowUtils::WindowUtils() {}
 
-WindowUtils::WindowUtils(int width, int height, string title)
+WindowUtils::WindowUtils(sf::RenderWindow &window)
 {
-    this->width = width;
-    this->height = height;
-    this->title = title;
+    this->windowWidth = window.getSize().x;
+    this->windowHeight = window.getSize().y;
 
     for (int i = 0; i < macros.size(); i++)
     {
@@ -65,11 +62,11 @@ WindowUtils::WindowUtils(int width, int height, string title)
 void WindowUtils::drawBackground(sf::RenderWindow &window)
 {
     window.clear(bgColor);
-    drawText(window, title, (0.05 * window.getSize().x), 0, 75, textColor);
-    drawPanel(window, (0.4 * window.getSize().x), (0.85 * window.getSize().y),  (0.05 * window.getSize().x), (0.1 * window.getSize().y), grayPanels);
-    drawPanel(window,  (0.4 * window.getSize().x), (0.85 * window.getSize().y), (0.55 * window.getSize().x), (0.1 * window.getSize().y), grayPanels);
-    drawText(window, "Input desired macronutrients:", (0.05 * window.getSize().x), (0.1 * window.getSize().y), 40, textColor);
-    drawText(window, "Your suggested foods:", (0.55 * window.getSize().x), (0.1 * window.getSize().y), 40, textColor);
+    drawText(window, title, (0.05 * windowWidth), 0, 75, textColor);
+    drawPanel(window, (0.4 * windowWidth), (0.85 * windowHeight),  (0.05 * windowWidth), (0.1 * windowHeight), grayPanels);
+    drawPanel(window,  (0.4 * windowWidth), (0.85 * windowHeight), (0.55 * windowWidth), (0.1 * windowHeight), grayPanels);
+    drawText(window, "Input desired macronutrients:", (0.05 * windowWidth), (0.1 * windowHeight), 40, textColor);
+    drawText(window, "Your suggested foods:", (0.55 * windowWidth), (0.1 * windowHeight), 40, textColor);
 
     // draw small white panels for text entry later
     // todo: Convert buttons into custom button class
@@ -79,26 +76,26 @@ void WindowUtils::drawBackground(sf::RenderWindow &window)
     {
         float offset = 0.26;
         float spacing = 0.08;
-        posXY = make_pair((0.1 * window.getSize().x), (offset + i*(spacing)) * window.getSize().y);
-        dimensionsXY = make_pair((0.05 * window.getSize().x), (0.05 * window.getSize().y));
+        posXY = make_pair((0.1 * windowWidth), (offset + i*(spacing)) * windowHeight);
+        dimensionsXY = make_pair((0.05 * windowWidth), (0.05 * windowHeight));
         drawPanel(window, (dimensionsXY.first), (dimensionsXY.second), (posXY.first), (posXY.second), sf::Color::White);
         
         clickBounds[macros[i]] = make_pair(posXY, make_pair(posXY.first + dimensionsXY.first, posXY.second + dimensionsXY.second));
 
         offset = 0.265;
         string label = (i < 4) ? "g" : "%";
-        posXY = make_pair((0.1 * window.getSize().x), (offset + i*(spacing)) * window.getSize().y);
-        drawText(window, label, (0.155 * window.getSize().x), (posXY.second), 30, textColor);
-        drawText(window, macros[i], (0.19 * window.getSize().x), (posXY.second), 30, textColor);
+        posXY = make_pair((0.1 * windowWidth), (offset + i*(spacing)) * windowHeight);
+        drawText(window, label, (0.155 * windowWidth), (posXY.second), 30, textColor);
+        drawText(window, macros[i], (0.19 * windowWidth), (posXY.second), 30, textColor);
     }
 
 
     // Generate food button
-    drawPanel(window, (0.2 * window.getSize().x), (0.1 * window.getSize().y), (0.15 * window.getSize().x), (0.75 * window.getSize().y), sf::Color::Black);
-    drawText(window, "Find my food", (0.175 * window.getSize().x), (0.77 * window.getSize().y), 40, sf::Color::White);
+    drawPanel(window, (0.2 * windowWidth), (0.1 * windowHeight), (0.15 * windowWidth), (0.75 * windowHeight), sf::Color::Black);
+    drawText(window, "Find my food", (0.175 * windowWidth), (0.77 * windowHeight), 40, sf::Color::White);
     
-    posXY = make_pair((0.15 * window.getSize().x), (0.75 * window.getSize().y));
-    dimensionsXY = make_pair((0.2 * window.getSize().x), (0.1 * window.getSize().y));
+    posXY = make_pair((0.15 * windowWidth), (0.75 * windowHeight));
+    dimensionsXY = make_pair((0.2 * windowWidth), (0.1 * windowHeight));
     clickBounds["Generate"] = make_pair(posXY, make_pair(posXY.first + dimensionsXY.first, posXY.second + dimensionsXY.second));
 
     drawResults(window);
@@ -208,6 +205,6 @@ void WindowUtils::generateButton(sf::RenderWindow &window)
     for (int i = 0; i < 9; i++)
     {
         float offset = 0.2;
-        drawPanel(window, (0.3 * window.getSize().x), (0.07 * window.getSize().y), (0.6 * window.getSize().x), (offset + i*(0.08)) * window.getSize().y, sf::Color::White);    
+        drawPanel(window, (0.3 * windowWidth), (0.07 * windowHeight), (0.6 * windowWidth), (offset + i*(0.08)) * windowHeight, sf::Color::White);    
     }
 }

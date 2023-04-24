@@ -16,8 +16,7 @@ int main(void)
     string title = "Food Finder";
 
     sf::RenderWindow window(sf::VideoMode(width, height), title, sf::Style::Close);
-    window.setSize(sf::Vector2u(width, height));
-    WindowUtils wutils = WindowUtils(height, width, title);
+    WindowUtils wutils = WindowUtils(window);
 
     // Window main loop
     while (window.isOpen())
