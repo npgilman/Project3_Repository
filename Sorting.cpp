@@ -1,6 +1,7 @@
 //
 // Created by Les on 4/19/2023.
 //
+#pragma once
 #include "Sorting.h"
 
 Sorting::Sorting()
@@ -105,9 +106,9 @@ void Sorting::testMergeSort()
 }
 int Sorting::getMax(vector<int> &data, int size, const map<string, float>& macro)    {
     int maxIndex = 0; 
-    float max = FLOAT_MIN; 
+    float max = INT_MIN; 
     for (int i = 0; i < size; i++)    {
-        string name = mapper[arr[i]];
+        string name = mapper[data[i]];
         if (macro.at(name) > max)    {
             maxIndex = i; 
             max = macro.at(name); 
@@ -117,16 +118,16 @@ int Sorting::getMax(vector<int> &data, int size, const map<string, float>& macro
 }
 void Sorting::pancakeFlip(vector<int> &data, int size)   {
 
-    for (int i = 0; i < n; i++)    {
-        swap(arr[i], arr[n-i]); 
+    for (int i = 0; i < size; i++)    {
+        swap(data[i], data[size-i]); 
     }
 }
 void Sorting::pancakeSort(vector<int> &data, int size, const map<string, float>& macro)    {
     int n = size; 
     while (n > 1)    {
-        int maxIndex = getMax(arr, n);
-        pancakeFlip(arr, maxIndex);
-        pancakeFlip(arr, n - 1); 
+        int maxIndex = getMax(data, n, macro);
+        pancakeFlip(data, maxIndex);
+        pancakeFlip(data, n - 1); 
         n--; 
     }
 }
