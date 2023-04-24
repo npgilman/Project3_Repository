@@ -103,3 +103,44 @@ void Sorting::testMergeSort()
         cout << food << "; " << fatData[food] << endl;
     }
 }
+int Sorting::getMax(vector<int> &data, int size, const map<string, float>& macro)    {
+    int maxIndex = 0; 
+    float max = FLOAT_MIN; 
+    for (int i = 0; i < size; i++)    {
+        string name = mapper[arr[i]];
+        if (macro.at(name) > max)    {
+            maxIndex = i; 
+            max = macro.at(name); 
+        }
+    }
+    return maxIndex; 
+}
+void Sorting::pancakeFlip(vector<int> &data, int size)   {
+
+    for (int i = 0; i < n; i++)    {
+        swap(arr[i], arr[n-i]); 
+    }
+}
+void Sorting::pancakeSort(vector<int> &data, int size, const map<string, float>& macro)    {
+    int n = size; 
+    while (n > 1)    {
+        int maxIndex = getMax(arr, n);
+        pancakeFlip(arr, maxIndex);
+        pancakeFlip(arr, n - 1); 
+        n--; 
+    }
+}
+void Sorting::testPancakeSort()
+{
+    vector<int> carbVec = indices;
+    pancakeSort(carbVec, carbVec.size()-1, carbData);
+    for (int i = 0; i < 50; i++)
+    {
+//        string food = mapper[testVec[i]];
+//        cout << food << ": " << proteinData[food] << endl;
+//        string food = mapper[carbVec[i]];
+//        cout << food << ": " << carbData[food] << endl;
+        string food = mapper[carbVec[i]];
+        cout << food << "; " << carbData[food] << endl;
+    }
+}
