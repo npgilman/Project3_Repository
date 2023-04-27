@@ -17,7 +17,7 @@ public:
     Sorting();
     void mergeSort(vector<int> &data, int start, int end, const map<string, float>& macro);
     void merge(vector<int> &data, int left, int mid, int right, const map<string, float>& macro);
-    void pancakeSort(vector<int> &data, int size, const map<string, float>& macro); 
+    double pancakeSort(vector<int> &data, int size, const map<string, float>& macro); 
     void testPancakeSort();
     void testMergeSort();
 

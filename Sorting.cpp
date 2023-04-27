@@ -3,8 +3,9 @@
 //
 #pragma once
 #include "Sorting.h"
+#include <chrono>
 
-
+typedef chrono::high_resolution_clock Clock; 
 Sorting::Sorting()
 {
     // Initialize data. Each map contains the food name, and it's relevant macro
@@ -110,6 +111,7 @@ void Sorting::testMergeSort()
 
 int Sorting::getMin(vector<int> &data, int size, const map<string, float>& macro)
 {
+
     int maxIndex = 0; 
     float max = INT_MAX;
     for (int i = 0; i < size; i++)
@@ -130,8 +132,9 @@ void Sorting::pancakeFlip(vector<int> &data, int size)
         swap(data[i], data[size-i]);
 }
 
-void Sorting::pancakeSort(vector<int> &data, int size, const map<string, float>& macro)
+double Sorting::pancakeSort(vector<int> &data, int size, const map<string, float>& macro)
 {
+    auto t1 = Clock::now();
     int n = size; 
     while (n > 1)
     {
@@ -140,6 +143,8 @@ void Sorting::pancakeSort(vector<int> &data, int size, const map<string, float>&
         pancakeFlip(data, n - 1); 
         n--; 
     }
+    auto t2 = Clock::now(); 
+    return std::chrono::duration<double, std::milli>(t2-t1).count();
 }
 
 void Sorting::testPancakeSort()
