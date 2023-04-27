@@ -1,8 +1,6 @@
 #include <SFML/Graphics.hpp>
-
 #include <iostream>
 #include <string>
-
 #include "windowUtils.cpp"
 #include "Sorting.h"
 
@@ -13,9 +11,11 @@ using namespace std;
 /// @return Code representing finishing status of program
 int main(void)
 {   
+    // Default parameters of application
     int height = 1080, width = 1920;
     string title = "Food Finder";
 
+    // Create window and window utility class
     sf::RenderWindow window(sf::VideoMode(width, height), title, sf::Style::Close);
     WindowUtils wutils = WindowUtils(window);
 
@@ -41,7 +41,11 @@ int main(void)
             // Close program
             if (event.type == sf::Event::Closed) {window.close();}
         }
+
+        // Draw all geometry to screen
         window.display();
     }
+
+    // Exit successfully
     return 0;
 }

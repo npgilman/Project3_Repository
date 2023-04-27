@@ -1,19 +1,18 @@
-//
-// Created by Les on 4/19/2023.
-//
 #pragma once
 #include "Sorting.h"
 #include <chrono>
 
-typedef chrono::high_resolution_clock Clock; 
+typedef chrono::high_resolution_clock Clock;
+
+// Constructor for Sorting Class
 Sorting::Sorting()
 {
     // Initialize data. Each map contains the food name, and it's relevant macro
     // Mapper contains the index value for a description. We sort a vector of index values based on macro value
-    ifstream file("./food.json");
+    ifstream file("../assets/dataset/food.json");
     json temp = json::parse(file);
     int i = 0;
-    for (auto& entry : temp)
+    for (auto &entry : temp)
     {
         string description = entry["Description"];
         allData[description] = entry;
@@ -27,19 +26,30 @@ Sorting::Sorting()
     }
 }
 
-void Sorting::mergeSort(vector<int> &data, int start, int end, const map<string, float>& macro)
+/// @brief Recursive sorting algorithm
+/// @param data Data to sort
+/// @param start Start index of data
+/// @param end End index of data
+/// @param macro Macro to sort by
+void Sorting::mergeSort(vector<int> &data, int start, int end, const map<string, float> &macro)
 {
     if (start < end)
     {
-        int middle = (start+end)/2;
+        int middle = (start + end) / 2;
         mergeSort(data, start, middle, macro);
         mergeSort(data, middle + 1, end, macro);
 
-        merge(data, start,  middle, end, macro);
+        merge(data, start, middle, end, macro);
     }
 }
 
-void Sorting::merge(vector<int> &data, int start, int middle, int end, const map<string, float>& macro)
+/// @brief Implementation of the merge sort algorithm
+/// @param data The given data to sort
+/// @param start Index to start at
+/// @param middle Index of the middle
+/// @param end Index to end at
+/// @param macro The macro being sorted
+void Sorting::merge(vector<int> &data, int start, int middle, int end, const map<string, float> &macro)
 {
     // Split into sub-arrays [start : middle] and [middle + 1 : end]
     vector<int> leftPortion;
@@ -88,80 +98,97 @@ void Sorting::merge(vector<int> &data, int start, int middle, int end, const map
     }
 }
 
+/// @brief Unit test for merge sort
 void Sorting::testMergeSort()
 {
     vector<int> testVec = indices;
     vector<int> carbVec = indices;
     vector<int> fatVec = indices;
-    mergeSort(testVec, 0, testVec.size()-1, proteinData);
-    mergeSort(carbVec, 0, carbVec.size()-1, carbData);
-    mergeSort(fatVec, 0, fatVec.size()-1, fatData);
+    mergeSort(testVec, 0, testVec.size() - 1, proteinData);
+    mergeSort(carbVec, 0, carbVec.size() - 1, carbData);
+    mergeSort(fatVec, 0, fatVec.size() - 1, fatData);
     for (int i = 50; i < 100; i++)
     {
-//        string food = mapper[testVec[i]];
-//        cout << food << ": " << proteinData[food] << endl;
         string food = mapper[carbVec[i]];
         cout << food << ": " << carbData[food] << endl;
-//        string food = mapper[fatVec[i]];
-//        cout << food << "; " << fatData[food] << endl;
     }
     string food = mapper[fatVec[8]];
     cout << allData[food];
 }
 
-int Sorting::getMin(vector<int> &data, int size, const map<string, float>& macro)
+/// @brief Helper function to get the minimum
+/// @param data Given data to search through
+/// @param size Size of the data
+/// @param macro The macro specified
+/// @return The index of the lowest macro found
+int Sorting::getMin(vector<int> &data, int size, const map<string, float> &macro)
 {
 
-    int maxIndex = 0; 
+    int maxIndex = 0;
     float max = INT_MAX;
     for (int i = 0; i < size; i++)
     {
         string name = mapper[data[i]];
         if (macro.at(name) < max)
         {
-            maxIndex = i; 
-            max = macro.at(name); 
+            maxIndex = i;
+            max = macro.at(name);
         }
     }
-    return maxIndex; 
+    return maxIndex;
 }
 
+/// @brief Helper function for the pancake sort algorithm
+/// @param data Given data to sort
+/// @param size The size of the data
 void Sorting::pancakeFlip(vector<int> &data, int size)
 {
     for (int i = 0; i < size; i++)
-        swap(data[i], data[size-i]);
+        swap(data[i], data[size - i]);
 }
 
-double Sorting::pancakeSort(vector<int> &data, int size, const map<string, float>& macro)
+/// @brief Implementation of the pancake sort algorithm
+/// @param data
+/// @param size The specified size of the data
+/// @param macro The macro the algorithm is sorting by
+/// @return The time in milliseconds that the sort takes
+double Sorting::pancakeSort(vector<int> &data, int size, const map<string, float> &macro)
 {
     auto t1 = Clock::now();
-    int n = size; 
+    int n = size;
     while (n > 1)
     {
         int maxIndex = getMin(data, n, macro);
         pancakeFlip(data, maxIndex);
-        pancakeFlip(data, n - 1); 
-        n--; 
+        pancakeFlip(data, n - 1);
+        n--;
     }
-    auto t2 = Clock::now(); 
-    return std::chrono::duration<double, std::milli>(t2-t1).count();
+    auto t2 = Clock::now();
+    return std::chrono::duration<double, std::milli>(t2 - t1).count();
 }
 
+/// @brief Unit test for pancake sort
 void Sorting::testPancakeSort()
 {
     vector<int> carbVec = indices;
-    pancakeSort(carbVec, carbVec.size()-1, carbData);
+    pancakeSort(carbVec, carbVec.size() - 1, carbData);
     for (int i = 50; i < 100; i++)
     {
-//        string food = mapper[testVec[i]];
-//        cout << food << ": " << proteinData[food] << endl;
-//        string food = mapper[carbVec[i]];
-//        cout << food << ": " << carbData[food] << endl;
+        //        string food = mapper[testVec[i]];
+        //        cout << food << ": " << proteinData[food] << endl;
+        //        string food = mapper[carbVec[i]];
+        //        cout << food << ": " << carbData[food] << endl;
         string food = mapper[carbVec[i]];
         cout << food << "; " << carbData[food] << endl;
     }
 }
 
+/// @brief Calls the chooseFood functions and returns a JSON of the chosen foods
+/// @param algorithm Whether the program should use merge sort or pancake sort
+/// @param protein Amount of protein (in g)
+/// @param carb Amount of carb (in g)
+/// @param fat Amount of fat (in g)
+/// @return returns a json of the chosen foods
 json Sorting::calculateFoods(bool algorithm, float protein, float carb, float fat)
 {
     // Choose which algorithm to sort the foods by. True = mergeSort False = pancakeSort
@@ -171,21 +198,21 @@ json Sorting::calculateFoods(bool algorithm, float protein, float carb, float fa
 
     if (algorithm)
     {
-        mergeSort(proteinIdx, 0, proteinIdx.size()-1, proteinData);
-        mergeSort(carbIdx, 0, carbIdx.size()-1, carbData);
-        mergeSort(fatIdx, 0, fatIdx.size()-1, fatData);
+        mergeSort(proteinIdx, 0, proteinIdx.size() - 1, proteinData);
+        mergeSort(carbIdx, 0, carbIdx.size() - 1, carbData);
+        mergeSort(fatIdx, 0, fatIdx.size() - 1, fatData);
     }
     else
     {
-        pancakeSort(proteinIdx, proteinIdx.size()-1, proteinData);
-        pancakeSort(carbIdx, carbIdx.size()-1, carbData);
-        pancakeSort(fatIdx, fatIdx.size()-1, fatData);
+        pancakeSort(proteinIdx, proteinIdx.size() - 1, proteinData);
+        pancakeSort(carbIdx, carbIdx.size() - 1, carbData);
+        pancakeSort(fatIdx, fatIdx.size() - 1, fatData);
     }
 
     // For reasonable food options, cut off first 100 entries. This is the pool of foods we pull from
-    carbIdx.assign(carbIdx.begin()+100, carbIdx.end());
-    proteinIdx.assign(proteinIdx.begin()+100, proteinIdx.end());
-    fatIdx.assign(fatIdx.begin()+100, fatIdx.end());
+    carbIdx.assign(carbIdx.begin() + 100, carbIdx.end());
+    proteinIdx.assign(proteinIdx.begin() + 100, proteinIdx.end());
+    fatIdx.assign(fatIdx.begin() + 100, fatIdx.end());
 
     // Get vector of indices of foods
     vector<int> foods = chooseFoods(protein, carb, fat);
@@ -194,7 +221,13 @@ json Sorting::calculateFoods(bool algorithm, float protein, float carb, float fa
     return createFoodJSON(foods);
 }
 
-vector<int> Sorting::chooseFoods(float protein, float carb, float fat) {
+/// @brief A function to find the optimal foods for consumption
+/// @param protein Amount of protein (in g)
+/// @param carb Amount of carbs (in g)
+/// @param fat Amount of fat (in g)
+/// @return vector of the indices of the chosen foods
+vector<int> Sorting::chooseFoods(float protein, float carb, float fat)
+{
     // Keep running while there is a category of macro to fulfil
     // Depending on which macro is most needed, find the value that most closely matches
     // Keep track of the values of all macros when food is added
@@ -207,7 +240,7 @@ vector<int> Sorting::chooseFoods(float protein, float carb, float fat) {
 
     while (protein > 0 && fat > 0)
     {
-        if (protein >= fat) //protein >= carb &&
+        if (protein >= fat) // protein >= carb &&
             foodIdx = choose(proteinIdx, proteinData, protein);
         else if (fat >= protein) // && fat >= carb
             foodIdx = choose(fatIdx, fatData, fat);
@@ -253,6 +286,11 @@ vector<int> Sorting::chooseFoods(float protein, float carb, float fat) {
     return foods;
 }
 
+/// @brief Finds the optimal macro based on the given values
+/// @param macroIdx The indices of the foods
+/// @param macroData Vector of the macros stored
+/// @param macro Value to match
+/// @return returns the ID of the food, otherwise returns -1
 int Sorting::choose(vector<int> &macroIdx, map<string, float> &macroData, float &macro)
 {
     for (int &idx : macroIdx)
@@ -269,14 +307,16 @@ int Sorting::choose(vector<int> &macroIdx, map<string, float> &macroData, float 
     return -1;
 }
 
-json Sorting::createFoodJSON(const vector<int>& foods)
+/// @brief Creates a JSON of the foods
+/// @param foods Indices of the foods
+/// @return json object of the foods
+json Sorting::createFoodJSON(const vector<int> &foods)
 {
     json outputFoods;
     for (int foodIdx : foods)
     {
-       string food = mapper[foodIdx];
-       outputFoods.emplace_back(allData[food]);
+        string food = mapper[foodIdx];
+        outputFoods.emplace_back(allData[food]);
     }
     return outputFoods;
 }
-
