@@ -4,6 +4,7 @@
 #include <string>
 
 #include "windowUtils.cpp"
+#include "Sorting.h"
 
 using namespace std;
 

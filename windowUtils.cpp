@@ -3,9 +3,15 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <chrono>
+
+#include "Sorting.h"
+#include "json.hpp"
 
 using namespace std;
 
+
+typedef chrono::high_resolution_clock Clock; 
 class WindowUtils
 {
     // SFML variables
@@ -20,14 +26,19 @@ class WindowUtils
     int windowWidth = 1920, windowHeight = 1080;
     vector<string> macros = {"Carbohydrates",
                             "Protein",
-                            "Fat",
-                            "Fiber",
-                            "Vitamin C"};
+                            "Fat"};
     map<string, pair<pair<int, int>, pair<int, int>>> clickBounds = {};
     map<string, string> buttonValues = {};
     bool buttonSelected = false;
     bool resultsGenerated = false;
     string activeButton = "";
+
+    Sorting sortClass;
+    json suggestedFoods;
+
+    std::chrono::_V2::system_clock::time_point t1 = Clock::now();
+
+    double sortTime = 0;
 
     public:
         WindowUtils();
@@ -72,7 +83,7 @@ void WindowUtils::drawBackground(sf::RenderWindow &window)
     // todo: Convert buttons into custom button class
     pair<int, int> posXY = make_pair(0,0);
     pair<int, int> dimensionsXY = make_pair(0,0);
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 3; i++)
     {
         float offset = 0.26;
         float spacing = 0.08;
@@ -83,23 +94,29 @@ void WindowUtils::drawBackground(sf::RenderWindow &window)
         clickBounds[macros[i]] = make_pair(posXY, make_pair(posXY.first + dimensionsXY.first, posXY.second + dimensionsXY.second));
 
         offset = 0.265;
-        string label = (i < 4) ? "g" : "%";
+        //string label = (i < 4) ? "g" : "%";
         posXY = make_pair((0.1 * windowWidth), (offset + i*(spacing)) * windowHeight);
-        drawText(window, label, (0.155 * windowWidth), (posXY.second), 30, textColor);
+        drawText(window, "g", (0.155 * windowWidth), (posXY.second), 30, textColor);
         drawText(window, macros[i], (0.19 * windowWidth), (posXY.second), 30, textColor);
     }
 
 
-    // Generate food button
-    drawPanel(window, (0.2 * windowWidth), (0.1 * windowHeight), (0.15 * windowWidth), (0.75 * windowHeight), sf::Color::Black);
-    drawText(window, "Find my food", (0.175 * windowWidth), (0.77 * windowHeight), 40, sf::Color::White);
-    
-    posXY = make_pair((0.15 * windowWidth), (0.75 * windowHeight));
-    dimensionsXY = make_pair((0.2 * windowWidth), (0.1 * windowHeight));
-    clickBounds["Generate"] = make_pair(posXY, make_pair(posXY.first + dimensionsXY.first, posXY.second + dimensionsXY.second));
+    // Generate food button to use merge sort
+    posXY = make_pair((0.1 * windowWidth), (0.75 * windowHeight));
+    dimensionsXY = make_pair((0.125 * windowWidth), (0.1 * windowHeight));
+    drawPanel(window, dimensionsXY.first, dimensionsXY.second, posXY.first, posXY.second, sf::Color::Black);
+    drawText(window, "Find my food", (0.125 * windowWidth), (0.77 * windowHeight), 20, sf::Color::White);
+    drawText(window, "with mergesort", (0.115 * windowWidth), (0.8 * windowHeight), 20, sf::Color::White);
+    clickBounds["GenerateMerge"] = make_pair(posXY, make_pair(posXY.first + dimensionsXY.first, posXY.second + dimensionsXY.second));
+
+    // Generate food button to use pancake sort
+    posXY = make_pair((0.25 * windowWidth), (0.75 * windowHeight));
+    drawPanel(window, dimensionsXY.first, dimensionsXY.second, posXY.first, posXY.second, sf::Color::Black);
+    drawText(window, "Find my food", (0.275 * windowWidth), (0.77 * windowHeight), 20, sf::Color::White);
+    drawText(window, "with pancakesort", (0.265 * windowWidth), (0.8 * windowHeight), 20, sf::Color::White);
+    clickBounds["GeneratePancake"] = make_pair(posXY, make_pair(posXY.first + dimensionsXY.first, posXY.second + dimensionsXY.second));
 
     drawResults(window);
-
 }
 
 void WindowUtils::drawResults(sf::RenderWindow &window)
@@ -109,6 +126,7 @@ void WindowUtils::drawResults(sf::RenderWindow &window)
         drawText(window, i->second, clickBounds[i->first].first.first, clickBounds[i->first].first.second, 30, sf::Color::Black);
     }
 
+    // If the results haven't been generated yet, draw a default screen 
     if (resultsGenerated)
     {
         results(window);
@@ -170,10 +188,24 @@ void WindowUtils::handleClick(sf::RenderWindow &window, sf::Event event)
     {
         activeButton = buttonName;
         buttonSelected = true;
-        if (buttonName.compare("Generate") == 0)
+        /// TODO: Make button for pancake sort
+        if (buttonName.compare("GenerateMerge") == 0)
         {
-            
+            // Call sorting class to get updated results
+            auto t1 = Clock::now();
+            suggestedFoods = sortClass.calculateFoods(true, stof(buttonValues["Protein"]), stof(buttonValues["Carbohydrates"]), stof(buttonValues["Fat"]));
             resultsGenerated = true;
+            auto t2 = Clock::now(); 
+            sortTime = std::chrono::duration<double, std::milli>(t2-t1).count();
+        }
+        if (buttonName.compare("GeneratePancake") == 0)
+        {
+            // Call sorting class to get updated results
+            auto t1 = Clock::now();
+            suggestedFoods = sortClass.calculateFoods(false, stof(buttonValues["Protein"]), stof(buttonValues["Carbohydrates"]), stof(buttonValues["Fat"]));
+            resultsGenerated = true;
+            auto t2 = Clock::now(); 
+            sortTime = std::chrono::duration<double, std::milli>(t2-t1).count();
         }
     }
     else 
@@ -198,7 +230,9 @@ void WindowUtils::handleText(sf::RenderWindow &window, sf::Event event)
         }
         else if (event.text.unicode < 58 && event.text.unicode > 47)
         {
-            if (str.size() < 5)
+            if (str[0] == '0')
+                str = static_cast<char>(event.text.unicode);
+            else if (str.size() < 5)
                 str += static_cast<char>(event.text.unicode);
         }
         buttonValues[activeButton] = str;
@@ -206,20 +240,20 @@ void WindowUtils::handleText(sf::RenderWindow &window, sf::Event event)
 }
 
 /// TODO: Change this to pull proper sorted results
+// Currently just displays the user input values
 void WindowUtils::results(sf::RenderWindow &window)
 {
     float offset = 0.2;
     float spacing = 0.08;
-    for (int i = 0; i < 9; i++)
+    
+    for (int i = 0; i < suggestedFoods.size(); i++)
     {
-        drawPanel(window, (0.3 * windowWidth), (0.07 * windowHeight), (0.6 * windowWidth), (offset + i*(spacing)) * windowHeight, sf::Color::White);    
+        drawPanel(window, (0.4 * windowWidth), (0.1 * windowHeight), (0.55 * windowWidth), (offset + spacing*i) * windowHeight, sf::Color::White);
+        drawText(window, suggestedFoods[i]["Category"], (0.6 * windowWidth), ((offset + spacing*i) * windowHeight), 40, sf::Color::Black);
     }
 
-    int count = 0;
-    for (auto i = buttonValues.begin(); i != buttonValues.end(); i++)
-    {
-        drawText(window, i->first, (0.6 * windowWidth), ((offset + count*(spacing)) * windowHeight), 40, sf::Color::Black);
-        drawText(window, i->second, (0.8 * windowWidth), ((offset + count*(spacing)) * windowHeight), 40, sf::Color::Black);
-        count++;
-    }
+    string str = "Sort time: ";
+    str.append(to_string(((int)(sortTime * 100)) / (1000.0 * 100)));
+    str.append("Seconds");
+    drawText(window, str, (0.075 * windowWidth), (0.9 * windowHeight), 40, sf::Color::White);
 }
