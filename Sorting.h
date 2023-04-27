@@ -6,6 +6,7 @@
 #define FINAL_PROJECT_SORTING_H
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 #include "json.hpp"
 using json = nlohmann::json;
 using namespace std;
@@ -20,17 +21,25 @@ public:
     void testPancakeSort();
     void testMergeSort();
 
+    json calculateFoods(bool algorithm, float protein, float carb, float fat);
 
 private:
     json allData;
+    json results;
     map<string, float> proteinData;
     map<string, float> carbData;
     map<string, float> fatData;
     map<int, string> mapper;
     vector<int> indices;
+    vector<int> carbIdx;
+    vector<int> fatIdx;
+    vector<int> proteinIdx;
 
     void pancakeFlip(vector<int> &data, int size); 
-    int getMax(vector<int> &data, int size, const map<string, float>& macro);
+    int getMin(vector<int> &data, int size, const map<string, float>& macro);
+    vector<int> chooseFoods(float protein, float carb, float fat);
+    int choose(vector<int> &macroIdx, map<string, float> &macroData, float &macro);
+    json createFoodJSON(const vector<int>& foods);
 };
 
 
